@@ -1,4 +1,4 @@
-SWOT
+SWOT ANALYSIS
 
 STRENGHTS
 - DB design
@@ -11,7 +11,6 @@ WEAKNESSES
 OPPORTUNITIES
 - no delay waiting for other people
 - try proper agile management
-
 
 THREATS
 - overwhelment for one person
