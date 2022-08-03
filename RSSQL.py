@@ -29,6 +29,12 @@ if __name__ == "__main__":
       PRIMARY KEY (PortfolioID)
   );
   
+  /*Trigger to insert initial record to historic records of values after creating new portfolio*/
+  CREATE TRIGGER add_historic_value
+	AFTER INSERT
+    ON Portfolio FOR EACH ROW
+    insert into value (portfolioid, date, value) values (new.portfolioID,DATE_SUB(curdate(), INTERVAL 1 DAY),0);
+  
   /*Hold - Ticker (Max 5 chars) volume (positive integer), portfolio ID (foreign key)*/
   CREATE TABLE Hold (
       Ticker VARCHAR(7) NOT NULL,
@@ -89,6 +95,7 @@ if __name__ == "__main__":
       Description VARCHAR(255) NOT NULL
       );
   
+  /*triggers to protect records in wallet*/
   CREATE TRIGGER no_amend
       BEFORE UPDATE ON Wallet FOR EACH ROW
       SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'records cannot be amended or deleted';

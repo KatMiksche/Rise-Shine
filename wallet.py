@@ -1,6 +1,5 @@
 from RSSQL import connection
 import numpy as np
-from itertools import chain
 
 class wllt():
     def __init__(self):

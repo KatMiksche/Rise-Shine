@@ -1,7 +1,3 @@
-
-
-!!! TO BE TESTED AGAIN AFTER ACADEMIC ACCESS TO API !!!
-
 from exAPI import *
 
 def test_API_current_price():
