@@ -10,14 +10,9 @@ def test_database_exists():
     mycursor.execute("use RISESHINE;")
     assert mycursor
 
-
 def test_database_ok():
     con = connection()
     mycursor = con.cursor()
     mycursor.execute("select * from information_schema.tables where table_schema='riseshine';")
     tables=mycursor.fetchall()
     assert len(tables)==4
-
-test_connection()
-test_database_exists()
-test_database_ok()

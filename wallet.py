@@ -3,11 +3,16 @@ import numpy as np
 from itertools import chain
 
 class wllt():
+    def __init__(self):
+        self.curvalue=0
+
+
     def CurrentValue(self,cursor):
         cursor.execute("select CurrentWallet from wallet order by date desc limit 1;")
         value=cursor.fetchall()
         value=str(value[0])
         value=float(value[10:-4])
+        self.curvalue=value
         return value
 
     def ShowRecords(self,cursor):
@@ -21,14 +26,15 @@ class wllt():
         return records
 
     def WriteRecord(self,cursor, change, text):
-        data=[(self.CurrentValue(self,cursor))+change, change, text]
-        cursor.execute('INSERT INTO wallet (CurrentWallet, ValueChange, Description) VALUES("%s", "%s", "%s")',
+        NewValue=self.CurrentValue(cursor)+change
+        data=[NewValue, change, text]
+        cursor.execute('INSERT INTO wallet (CurrentWallet, ValueChange, Description) VALUES(%s, %s, %s)',
                        data)
 
 
-wallet=wllt
-con = connection()
-con.autocommit=True
-mycursor = con.cursor()
-mycursor.execute("use riseshine;")
-print(type(wallet.ShowRecords(wallet,mycursor)))
+# wallet=wllt
+# con = connection()
+# con.autocommit=True
+# mycursor = con.cursor()
+# mycursor.execute("use riseshine;")
+# print(type(wallet.ShowRecords(wallet,mycursor)))

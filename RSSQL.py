@@ -16,8 +16,8 @@ if __name__ == "__main__":
   mycursor = con.cursor()
 
   mycursor.execute("""
-  create database RISESHINE2;
-  use RISESHINE2;
+  create database RISESHINE;
+  use RISESHINE;
   
   /*Portfolio - ID (auto-increment primary key), name (varchar 55), create stamp, last update stamp*/
   CREATE TABLE Portfolio (
@@ -31,18 +31,14 @@ if __name__ == "__main__":
   
   /*Hold - Ticker (Max 5 chars) volume (positive integer), portfolio ID (foreign key)*/
   CREATE TABLE Hold (
-      Ticker VARCHAR(5) NOT NULL,
+      Ticker VARCHAR(7) NOT NULL,
       Volume INT NOT NULL,
       PortfolioID INT NOT NULL,
+      Value DECIMAL(10 , 2 ) DEFAULT 0,
+      LastUpdate TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
       FOREIGN KEY (PortfolioID) REFERENCES PORTFOLIO (PortfolioID),
       CONSTRAINT test_volume_positive CHECK (Volume >= 0)
       );
-  
-  /* remove tickers with 0 volume */    
-  CREATE TRIGGER ticker_remove
-      AFTER UPDATE 
-      ON Hold FOR EACH ROW
-      DELETE FROM HOLD WHERE Volume=0;
       
   /* Value - portfolio ID (foreign key), date, value (float, round 0.2), calculated % difference against previous day (round 0.2) */
   CREATE TABLE Value (
@@ -58,7 +54,7 @@ if __name__ == "__main__":
   deterministic
   BEGIN
       DECLARE LastValue decimal(10,4);
-      SET LastValue = (select Value from value WHERE PortfolioID=Portfolio AND DATE=DATE_SUB(NewDate, INTERVAL 1 DAY));
+      SET LastValue = (select Value from value WHERE PortfolioID=Portfolio AND DATE=(select max(date) from value));
       IF LastValue is null then set LastValue = 0;
       end if;
   RETURN LastValue;
