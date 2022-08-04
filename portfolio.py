@@ -1,9 +1,7 @@
 import pandas as pd
 import plotly.express as px
 from exAPI import API_daily, API_current_price
-from RSSQL import connection
 import numpy as np
-from wallet import wllt
 from datetime import datetime
 
 class prtfl:
@@ -42,6 +40,7 @@ class prtfl:
         return self.name
 
     def load_currentvalue(self,cursor):
+        if self.hold.size == 0: self.load_hold(cursor)
         self.current_value=0
         for i in range(len(self.hold)):
             ticker=self.hold[i][0]
@@ -69,7 +68,7 @@ class prtfl:
         self.load_hold(cursor)
         self.load_currentvalue(cursor)
         self.load_historicvalue(cursor)
-        print('load successful')
+        #print('load successful')
         return self
 
     def graph_performance(self,cursor):
@@ -81,17 +80,16 @@ class prtfl:
         graph.show()
         return graph
 
-    def buy(self,cursor,user_wallet, ticker,volume):
+    def buy(self,cursor,wallet, ticker,volume):
         if self.hold.size == 0: self.load_hold(cursor)
         ticker_price=API_current_price(ticker)
         price=volume*ticker_price
-        funds=user_wallet().CurrentValue(cursor)
-        if price>funds:
+        if price>wallet.CurrentValue(cursor):
             message='insufficient funds, purchase not made'
         else:
             price=-price
             text='Purchase of '+str(volume)+' stocks of '+ticker
-            user_wallet().WriteRecord(cursor, price, text)
+            wallet.WriteRecord(cursor, price, text)
             if ticker in self.hold['Ticker']:
                 data = [volume,ticker,self.id]
                 cursor.execute('UPDATE hold set Volume=Volume+%s where ticker=%s and portfolioid=%s;',data)
@@ -104,7 +102,7 @@ class prtfl:
         print(message)
         return self
 
-    def sell(self,cursor,user_wallet, ticker,volume):
+    def sell(self,cursor,wallet, ticker,volume):
         if self.hold.size == 0: self.load_hold(cursor)
         if ticker not in self.hold['Ticker']:
             message='you do not own any stocks of this ticker'
@@ -118,7 +116,7 @@ class prtfl:
                 data = [volume, ticker, self.id]
                 cursor.execute('UPDATE hold set Volume=Volume-%s where ticker=%s and portfolioid=%s;', data)
                 text = 'Sale of ' + str(volume) + ' stocks of ' + ticker
-                user_wallet().WriteRecord(cursor, price, text)
+                wallet.WriteRecord(cursor, price, text)
                 cursor.execute('DELETE FROM HOLD WHERE Volume=0;')
                 self.load_hold(cursor)
                 self.load_currentvalue(cursor)
@@ -164,7 +162,7 @@ class prtfl:
 
     def update_records(self,cursor):
         if self.historic_value.size==0 or self.hold.size==0: self.SQL_load(cursor)
-        #if self.hold.size==0: self.SQL_load(cursor)
+        if self.hold.size == 0: return self
         lastdate=str(self.historic_value[-1][0])
         lastdate=datetime.strptime(lastdate[2:],'%y-%m-%d')
         difference=datetime.now()-lastdate
@@ -179,49 +177,5 @@ class prtfl:
             message='update successful'
         else:
             message='update not required'
-        print(message)
+        #print(message)
         return self
-
-
-# con = connection()
-# con.autocommit = True
-# mycursor = con.cursor()
-# mycursor.execute("use RISESHINE;")
-#
-# wallet=wllt()
-# portfolio1=prtfl(1)
-# portfolio2=prtfl(2)
-# portfolio1.SQL_load(mycursor)
-# print(portfolio1.update(mycursor))
-
-# print(portfolio2.close(mycursor,wallet))
-# print(portfolio2.hold)
-# print(portfolio2.current_value)
-
-#print(portfolio1.sell(mycursor,wallet,'IBM',50))
-# print(API_current_price(ticker))
-# print(portfolio2.buy(mycursor,wallet,ticker,25))
-# print(wallet.CurrentValue(mycursor))
-# print(portfolio2.hold)
-# print(portfolio2.current_value)
-#portfolio1.load_currentvalue(mycursor)
-#portfolio1.graph_performance(mycursor)
-
-#portfolio1.load_hold(mycursor)
-#portfolio1.load_currentvalue(mycursor)
-#portfolio2.load(mycursor)
-#print('IBM ',API_current_price('IBM'))
-#print('MSFT ',API_current_price('MSFT'))
-#print('p1 hold ',portfolio1.hold)
-#print('p1 value ',portfolio1.currentvalue)
-# print('p2 hold ',portfolio2.hold)
-# print('p2 value ',portfolio2.currentvalue)
-#print(portfolio1)
-# print(portfolio1.load_value(mycursor))
-# print(portfolio2.load_value(mycursor))
-# print(type(portfolio2.load_value(mycursor)))
-#portfolio1.print()
-
-# mycursor.close()
-# con.close()
-

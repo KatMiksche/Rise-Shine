@@ -68,6 +68,8 @@ def API_get_ticker_graph(ticker_dict,ticker):
     #CandleGraph.show()
     return CandleGraph
 
+
+
 # API_get_info('MSFT')
 # ticker_dict={}
 # ticker='MSFT'
