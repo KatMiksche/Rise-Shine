@@ -5,10 +5,15 @@ from RSSQL import *
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 
-con, mycursor = DBconnection(config(), False)
-portfolios_dict = fetch_portfolios(mycursor)
-load_portfolios(portfolios_dict, mycursor)
-DBend(con,mycursor)
+global con, mycursor, portfolios_dict
+
+try:
+    portfolios_dict
+except:
+    con, mycursor = DBconnection(config(), False)
+    portfolios_dict = fetch_portfolios(mycursor)
+    load_portfolios(portfolios_dict, mycursor)
+    DBend(con, mycursor)
 
 @app.route('/',methods=['GET'])
 def home():

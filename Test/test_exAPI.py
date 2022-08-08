@@ -25,9 +25,8 @@ def test_API_get_info():
     assert len(dict) == 4
 
 def test_API_get_ticker_graph():
-    ticker_dict={}
     ticker='MSFT'
-    ticker_dict.update ({ticker:API_intraday(ticker,60)})
-    candlegraph = API_get_ticker_graph(ticker_dict,ticker)
-    assert candlegraph
+    data = API_intraday(ticker,60)
+    graph, path = API_get_ticker_graph(data,ticker)
+    assert graph
 

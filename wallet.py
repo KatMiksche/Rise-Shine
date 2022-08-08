@@ -1,4 +1,5 @@
-import numpy as np
+import pandas as pd
+from RSSQL import *
 
 class wllt():
     def __init__(self):
@@ -13,12 +14,8 @@ class wllt():
 
     def ShowRecords(self,cursor):
         cursor.execute("select * from wallet order by Date desc;")
-        records=cursor.fetchall()
-        data_type = [('CurrentValue', float),
-                     ('Change', float),
-                     ('Date', str, 20),
-                     ('Description', str, 255)]
-        records = np.fromiter(records, count=len(records), dtype=data_type)
+        records=pd.DataFrame(cursor.fetchall())
+        records.columns = ['Value','Change','Timestamp','Comment']
         return records
 
     def WriteRecord(self,cursor, change, text):
@@ -26,3 +23,7 @@ class wllt():
         data=[NewValue, change, text]
         cursor.execute('INSERT INTO wallet (CurrentWallet, ValueChange, Description) VALUES(%s, %s, %s)',
                        data)
+        self.CurrentValue(cursor)
+
+if __name__ == "__main__":
+    pass

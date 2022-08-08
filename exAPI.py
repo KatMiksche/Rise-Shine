@@ -5,6 +5,7 @@ import io
 import csv
 import itertools
 import plotly.graph_objects as go
+from datetime import datetime
 
 def API_current_price(ticker):
     url='https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='+ticker+'&apikey=0PB7QVJ9Z7XQB4T8'
@@ -56,34 +57,21 @@ def API_get_info(ticker):
     var=dict(itertools.islice(var.items(), 4))
     return var
 
-def API_get_ticker_graph(ticker_dict,ticker):
-    CandleGraph= go.Figure(data=[go.Candlestick(x=ticker_dict[ticker]['timestamp'],
-                                  open=ticker_dict[ticker]['open'],
-                                  high=ticker_dict[ticker]['high'],
-                                  low=ticker_dict[ticker]['low'],
-                                  close=ticker_dict[ticker]['close'],
-                                 )])
+def API_get_ticker_graph(intraday_data,ticker):
+    CandleGraph= go.Figure(data=[go.Candlestick(x=intraday_data['timestamp'],
+                                  open=intraday_data['open'],
+                                  high=intraday_data['high'],
+                                  low=intraday_data['low'],
+                                  close=intraday_data['close'],
+                                 )], layout = go.Layout(margin=go.layout.Margin(l=15,r=15,b=15,t=60,)))
     CandleGraph.update_layout(xaxis_rangeslider_visible=False)
     CandleGraph.update_layout(title={'text': ticker, 'x': 0.5})
+    now=str(datetime.now())
+    now=now[0:13]+now[14:16]+now[17:19]
+    path='Graphs/'+ticker+'-'+now+'.png'
+    CandleGraph.write_image(path)
     #CandleGraph.show()
-    return CandleGraph
+    return CandleGraph, path
 
-
-
-# API_get_info('MSFT')
-# ticker_dict={}
-# ticker='MSFT'
-# ticker_dict.update ({ticker:API_intraday(ticker,60)})
-# API_get_ticker_graph(ticker_dict,ticker)
-# print(ticker_dict)
-
-# fig = go.Figure(data=go.Scatter(x=ticker_dict[ticker]['timestamp'],y=ticker_dict[ticker]['close'], mode='lines'))
-# fig.show()
-
-# df=API_daily('MSFT')
-# df.count()
-# print(df['timestamp'].count())
-#tickers = get_tickers()
-#API_search_ticker(tickers,'microsoft')
-
-#help(API_intraday)
+if __name__ == "__main__":
+    pass

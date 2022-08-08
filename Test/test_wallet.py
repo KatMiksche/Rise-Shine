@@ -1,4 +1,4 @@
-import numpy
+import pandas
 from RSSQL import *
 from wallet import wllt
 
@@ -13,7 +13,7 @@ def test_show_records():
     wallet = wllt()
     con, mycursor = DBconnection(config(),False)
     var=wallet.ShowRecords(mycursor)
-    assert type(var) == numpy.ndarray
+    assert type(var) == pandas.core.frame.DataFrame
     DBend(con,mycursor)
 
 def test_write_record():

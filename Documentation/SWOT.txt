@@ -1,0 +1,18 @@
+SWOT ANALYSIS
+
+STRENGHTS
+- DB design
+- strong logic
+
+WEAKNESSES
+- testing
+- classes
+
+OPPORTUNITIES
+- no delay waiting for other people
+- try proper agile management
+
+THREATS
+- overwhelment for one person
+- getting caught in fancy features
+- external API down

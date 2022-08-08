@@ -18,7 +18,7 @@ class prtfl:
         print('current value: ',self.current_value)
         np.set_printoptions(threshold=None, edgeitems=1, linewidth=6)
         print('hold: ',self.hold, sep='\n')
-        print('value: ',self.historic_value, sep='\n')
+        print('historic value: ',self.historic_value, sep='\n')
         return True
 
     def load_hold(self,cursor):
@@ -68,7 +68,7 @@ class prtfl:
         self.load_hold(cursor)
         self.load_currentvalue(cursor)
         self.load_historicvalue(cursor)
-        #print('load successful')
+        print('Portfolio ID '+str(self.id)+' load successful')
         return self
 
     def graph_performance(self,cursor):
@@ -77,19 +77,24 @@ class prtfl:
         text='Portfolio '+str(self.id)+': '+self.name+', current value: $'+str(self.current_value)
         graph = px.line(self.historic_value, x="Date", y="Value", markers=True, hover_data=["Difference"])
         graph.update_layout(title={'text': text, 'x': 0.5})
-        graph.show()
-        return graph
+        now = str(datetime.now())[0:10]
+        path = 'Graphs/' + str(self.id) +'-' +now + '.jpg'
+        graph.write_image(path)
+        #graph.show()
+        return graph, path
 
     def buy(self,cursor,wallet, ticker,volume):
+        ticker=ticker.upper()
         if self.hold.size == 0: self.load_hold(cursor)
         ticker_price=API_current_price(ticker)
         price=volume*ticker_price
         if price>wallet.CurrentValue(cursor):
-            message='insufficient funds, purchase not made'
+            message='Insufficient funds, purchase not made.'
         else:
             price=-price
             text='Purchase of '+str(volume)+' stocks of '+ticker
             wallet.WriteRecord(cursor, price, text)
+            wallet.CurrentValue(cursor)
             if ticker in self.hold['Ticker']:
                 data = [volume,ticker,self.id]
                 cursor.execute('UPDATE hold set Volume=Volume+%s where ticker=%s and portfolioid=%s;',data)
@@ -98,31 +103,31 @@ class prtfl:
                 cursor.execute('INSERT INTO hold (ticker, volume, portfolioid, value) VALUES(%s, %s, %s, %s);',data)
             self.load_hold(cursor)
             self.load_currentvalue(cursor)
-            message='purchase successfully made'
-        print(message)
-        return self
+            message='Purchase successfully made.'
+        return message
 
     def sell(self,cursor,wallet, ticker,volume):
+        ticker=ticker.upper()
         if self.hold.size == 0: self.load_hold(cursor)
         if ticker not in self.hold['Ticker']:
-            message='you do not own any stocks of this ticker'
+            message='You do not own any stocks of this ticker.'
         else:
             var=np.where(self.hold['Ticker'] == ticker)
             var=int(var[0])
             if self.hold[var][1]<volume:
-                message='you do not have enough stocks of this ticker'
+                message='You do not have enough stocks of this ticker.'
             else:
                 price = volume * API_current_price(ticker)
                 data = [volume, ticker, self.id]
                 cursor.execute('UPDATE hold set Volume=Volume-%s where ticker=%s and portfolioid=%s;', data)
                 text = 'Sale of ' + str(volume) + ' stocks of ' + ticker
                 wallet.WriteRecord(cursor, price, text)
+                wallet.CurrentValue(cursor)
                 cursor.execute('DELETE FROM HOLD WHERE Volume=0;')
                 self.load_hold(cursor)
                 self.load_currentvalue(cursor)
-                message = 'sale successfully made'
-        print(message)
-        return self
+                message = 'Sale successfully made.'
+        return message
 
     def close(self,cursor, wallet):
         var=len(self.hold)
@@ -130,7 +135,7 @@ class prtfl:
             ticker=str(self.hold[0][0])
             volume=int(self.hold[0][1])
             self.sell(cursor,wallet,ticker,volume)
-        message='portfolio closure was successful'
+        message='Portfolio closure was successful.'
         return message
 
     def get_historic_data(self):
@@ -156,26 +161,24 @@ class prtfl:
                 volume = self.hold[j][1]
                 tickervalue = historic_records.at[i, ticker]
                 value = value + (volume * tickervalue)
-                #print(ticker, volume, tickervalue, value)
             data = [self.id, date, value]
             cursor.execute('insert into value (portfolioid, date, value) values (%s,%s,%s);', data)
 
     def update_records(self,cursor):
-        if self.historic_value.size==0 or self.hold.size==0: self.SQL_load(cursor)
+        if self.historic_value.size==0: self.SQL_load(cursor)
         if self.hold.size == 0: return self
         lastdate=str(self.historic_value[-1][0])
         lastdate=datetime.strptime(lastdate[2:],'%y-%m-%d')
         difference=datetime.now()-lastdate
-        #print('difference of days ',difference)
+        print('difference of days ',difference)
         if difference.days>1:
             historic_records=self.get_historic_data()
             days_required=historic_records.loc[historic_records['timestamp'] == str(self.historic_value[-1][0])].index[0]
             days_required=days_required-1
             self.insert_historic_values(cursor,days_required,historic_records)
             self.load_historicvalue(cursor)
-            #print(self.historic_value)
-            message='update successful'
+            message='Portfolio ID '+str(self.id)+' update successful'
         else:
-            message='update not required'
-        #print(message)
+            message='Portfolio ID '+str(self.id)+' update not required'
+        print(message)
         return self

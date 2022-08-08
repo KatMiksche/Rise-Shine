@@ -32,3 +32,4 @@ def test_portfolios_overview():
     load_portfolios(dict,mycursor)
     assert len(portfolios_overview(dict))>0
     DBend(con,mycursor)
+

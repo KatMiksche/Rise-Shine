@@ -3,6 +3,7 @@ from RSSQL import *
 from wallet import wllt
 from portfolio import prtfl
 import pandas as pd
+import tkinter as tk
 
 def fetch_portfolios(cursor):
     dictionary={}
@@ -12,8 +13,6 @@ def fetch_portfolios(cursor):
         var=(records[i])[0]
         dictionary.update({var:prtfl(var)})
     return dictionary
-
-
 
 def load_portfolios(dictionary,cursor):
     keys=list(dictionary.keys())
@@ -31,7 +30,7 @@ def start_portfolio(name,dictionary,cursor):
     var=newdict[-1]
     dictionary.update({var: prtfl(var)})
     dictionary[var].SQL_load(cursor)
-    message='portfolio '+str(var)+': '+name+' successfully created'
+    message='Portfolio '+str(var)+': '+name+' was successfully created.'
     return message
 
 def portfolios_overview(dictionary):
@@ -44,30 +43,4 @@ def portfolios_overview(dictionary):
 
 
 if __name__ == "__main__":
-    wallet123=wllt()
-    tickers= pd.DataFrame
-    #tickers=API_get_tickers()
-
-    con, mycursor = DBconnection(config(),True)
-
-    # inicialize portfolios, load and update
-    portfolios_dict = fetch_portfolios(mycursor)
-    print(portfolios_overview(portfolios_dict))
-    load_portfolios(portfolios_dict,mycursor)
-    print(portfolios_overview(portfolios_dict))
-    # print(portfolios_dict)
-    # print(portfolios_overview(portfolios_dict))
-
-    #print(portfolios_dict[6].historic_value)
-    # portfolios_dict[6].buy(mycursor,wallet123,'AAPL',10)
-    # portfolios_dict[6].print()
-
-    #print(start_portfolio('tech stock',portfolios_dict,mycursor))
-    #print(portfolios_dict)
-    # print(portfolios_dict[6].historic_value)
-    #print(portfolios_overview(portfolios_dict))
-    #portfolios_dict[1].print()
-    #portfolios_dict[6].graph_performance(mycursor)
-
-
-    #DBend(con, mycursor)
+    pass
