@@ -3,7 +3,6 @@ from RSSQL import *
 from wallet import wllt
 from portfolio import prtfl
 import pandas as pd
-import tkinter as tk
 
 def fetch_portfolios(cursor):
     dictionary={}

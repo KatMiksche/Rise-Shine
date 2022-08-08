@@ -16,6 +16,7 @@ class GUI(tk.Tk):
         super().__init__()
         self.title('Rise & Shine')
         self.geometry('1200x800')
+        self.configure(bg='grey')
         self.resizable(False, False)
         self.iconbitmap('icon.ico')
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -28,8 +29,6 @@ class GUI(tk.Tk):
 
         self.style = ttk.Style(self)
         self.style.configure('start.TButton',font=('Verdana',25))
-        self.style.configure('T1.TFrame', background='blue')
-        self.style.configure('T2.TFrame', background='red')
         self.style.configure('T3.TFrame', background='gray')
         self.style.configure('menu.TButton', font=('Verdana',12))
 
