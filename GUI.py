@@ -106,7 +106,7 @@ class GUI(tk.Tk):
         global con, mycursor, portfolios_dict, tickers, mywallet
         mywallet = wllt()
         tickers = pd.DataFrame()
-        con, mycursor = DBconnection(config(), False) # TO BE CHANGE TO TRUE !!!
+        con, mycursor = DBconnection(config(), True) # TO BE CHANGE TO TRUE !!!
         portfolios_dict = fetch_portfolios(mycursor)
         load_portfolios(portfolios_dict, mycursor)
         mywallet.curvalue = mywallet.CurrentValue(mycursor)
@@ -124,7 +124,7 @@ class GUI(tk.Tk):
         self.clear_mainframe()
         self.scrolledtext_data.insert(tk.INSERT, 'ID - NAME - CURRENT $ VALUE')
         self.data_to_scrolledtext(portfolios_overview(portfolios_dict),'list')
-        self.scrolledtext_data.configure(height=44, width=90)  # height=720, width=985
+        self.scrolledtext_data.configure(height=44, width=90)
         self.scrolledtext_data.place(relx=0, rely=0, anchor='nw')
 
     def portf_overview(self,window):
@@ -230,7 +230,7 @@ class GUI(tk.Tk):
         self.button_buy.place(relx=0, rely=0.05, anchor='nw')
         self.button_sell.place(relx=0.15, rely=0.05, anchor='nw')
         self.data_to_scrolledtext(mywallet.ShowRecords(mycursor), 'df')
-        self.scrolledtext_data.configure(height=30, width=90)  # height=720, width=985
+        self.scrolledtext_data.configure(height=30, width=90)
         self.scrolledtext_data.place(relx=0, rely=0.2, anchor='nw')
 
     def money(self,operation):
@@ -358,7 +358,7 @@ class GUI(tk.Tk):
                 messagebox.showinfo("Missing", "Input required text for search")
                 return
             self.data_to_scrolledtext(API_search_ticker(tickers,text), 'df')
-            self.scrolledtext_data.configure(height=44, width=80)  # height=720, width=985
+            self.scrolledtext_data.configure(height=44, width=80)
             self.scrolledtext_data.place(relx=0, rely=0.05, anchor='nw')
             self.scrolledtext_data.insert(tk.INSERT, '\n\n')
 
