@@ -2,11 +2,11 @@
 Stock portfolio app
 
 steps for installation:
-1)download whole repository
-2)rise-shine-SQL-setup.sql - required
-3)DEMO data.sql - optional
-4)run tests in Test folder - optional
-5)GUI.py - run the main file
+1) rise-shine-SQL-setup.sql - required
+2) DEMO data.sql - optional
+3) change sql connection config details in RSSQL.py 
+4) run tests in Test folder - optional
+5) GUI.py - run the main file
 
 if you require more info, check the Documentation folder
 
